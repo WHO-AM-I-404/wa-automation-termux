@@ -3,6 +3,8 @@
 **Deskripsi:**
 Script ini memungkinkan pengiriman pesan WhatsApp otomatis melalui Termux menggunakan Python, Selenium, dan Chromium. Script mendukung pengiriman ke banyak nomor sekaligus, pesan multi-baris, dan karakter khusus. Script ini dirancang untuk penggunaan pribadi dan edukasi.
 
+Repo GitHub: [https://github.com/WHO-AM-I-404/wa-automation-termux](https://github.com/WHO-AM-I-404/wa-automation-termux/)
+
 ---
 
 ## **Fitur Utama**
@@ -26,16 +28,23 @@ Script ini memungkinkan pengiriman pesan WhatsApp otomatis melalui Termux menggu
 
 ## **Step-by-Step Setup di Termux**
 
-### 1. Install Termux & Dependencies
+### 1. Clone Repository
+
+```bash
+pkg install git -y
+git clone https://github.com/WHO-AM-I-404/wa-automation-termux.git
+cd wa-automation-termux
+```
+
+### 2. Install Dependencies
 
 ```bash
 pkg update && pkg upgrade -y
-pkg install python git wget unzip -y
-pkg install chromium -y
+pkg install python wget unzip chromium -y
 pip install selenium
 ```
 
-### 2. Download Chromedriver
+### 3. Download Chromedriver
 
 1. Cek versi Chromium:
 
@@ -54,57 +63,7 @@ mv chromedriver /data/data/com.termux/files/usr/bin/
 
 > Ganti `<VERSI>` dengan versi chromedriver yang sesuai.
 
-### 3. Buat Script Python
-
-Buat file `wa_auto.py` dengan isi berikut:
-
-```python
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-import time
-import urllib.parse
-
-# Path chromedriver
-driver_path = "/data/data/com.termux/files/usr/bin/chromedriver"
-
-# Pilihan headless agar ringan, ganti True/False sesuai kebutuhan
-options = webdriver.ChromeOptions()
-options.add_argument("--headless")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-
-# Inisialisasi browser
-driver = webdriver.Chrome(executable_path=driver_path, options=options)
-
-# Buka WhatsApp Web
-driver.get("https://web.whatsapp.com")
-print("Scan QR Code WhatsApp Web di browser Termux jika diperlukan, tunggu 15 detik...")
-time.sleep(15)  # Waktu scan QR
-
-# Daftar nomor tujuan
-nomor_list = ["+628123456789", "+628987654321"]  # ganti nomor tujuan
-pesan = """Halo!
-Ini pesan panjang yang bisa dikirim otomatis via Termux.
-Bisa lebih dari satu baris, dan bisa pakai karakter khusus 
-"""
-
-for nomor in nomor_list:
-    text = urllib.parse.quote(pesan)  # encode URL
-    driver.get(f"https://web.whatsapp.com/send?phone={nomor}&text={text}")
-    time.sleep(8)  # tunggu halaman load
-    try:
-        send_button = driver.find_element(By.XPATH, '//button[@data-testid="compose-btn-send"]')
-        send_button.click()
-        print(f"Pesan terkirim ke {nomor}")
-    except:
-        print(f"Gagal kirim ke {nomor}")
-    time.sleep(3)
-
-driver.quit()
-print("Selesai semua!")
-```
-
-### 4. Jalankan Script
+### 4. Jalankan Script Python
 
 ```bash
 python wa_auto.py
@@ -112,19 +71,7 @@ python wa_auto.py
 
 * Script dapat mengirim pesan panjang dan multi-baris.
 * Dapat mengirim ke beberapa nomor.
-
-### 5. Upload ke GitHub (Opsional)
-
-```bash
-git init
-git remote add origin https://github.com/<username>/wa-automation-termux.git
-git add wa_auto.py
-git commit -m "Add WhatsApp automation script"
-git branch -M main
-git push -u origin main
-```
-
-> Ganti `<username>` dengan username GitHub.
+* Scan QR Code saat pertama kali dijalankan.
 
 ---
 
